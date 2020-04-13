@@ -3,7 +3,6 @@ package com.zkhc.zkhc_dd.config;
 import com.zkhc.zkhc_dd.properties.*;
 import com.zkhc.zkhc_dd.entity.DD;
 import com.zkhc.zkhc_dd.service.DDProvider;
-import com.zkhc.zkhc_dd.service.DDService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -18,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableConfigurationProperties({DDProperties.class, EnvProperties.class, NameProperties.class, PortProperties.class, PublishProperties.class
 })
-@ConditionalOnClass(DDService.class)
+@ConditionalOnClass(DDProvider.class)
 @ConditionalOnProperty
         (
                 prefix = "dd",
@@ -54,11 +53,6 @@ public class DDAutoConfiguration {
         dd.setPort(portProperties.getPort());
         dd.setPublishInfo(publishProperties.getPublishInfo());
         return dd;
-    }
-
-    @Bean
-    public DDService ddService(){
-        return new DDService();
     }
 
     @Bean
