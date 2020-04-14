@@ -1,7 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.zkhc.zkhc_dd.config.DDAutoConfiguration,\
-  com.zkhc.zkhc_dd.config.RabbitmqConfig,\
-  com.zkhc.zkhc_dd.controller.DdController,\
-  com.zkhc.zkhc_dd.rabbitmq.CommonListener,\
-  com.zkhc.zkhc_dd.service.DDProvider,\
-  com.zkhc.zkhc_dd.service.DDService
+  com.zkhc.zkhc_dd.config.RabbitmqConfig

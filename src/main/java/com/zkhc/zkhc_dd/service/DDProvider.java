@@ -9,15 +9,13 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.io.UnsupportedEncodingException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
 public class DDProvider {
-    @Autowired
-    private DDService ddService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -32,48 +30,80 @@ public class DDProvider {
         return rabbitTemplate;
     }
 
-    /*public void exception(Exception exception) {
-        ddService.exception(exception);
-    }*/
-
-    public void exception(String exception) {
-        ddService.exception(exception);
-    }
-
-    public void send(String message){
+    private void sendMq(String method,String message){
         Map<String,Object> dataMap= new HashMap();
-        dataMap.put("method","send");
+        dataMap.put("method",method);
         dataMap.put("msg",message);
         try {
             Message msg=MessageBuilder.withBody(objectMapper.writeValueAsBytes(dataMap)).build();
             init().convertAndSend(msg);
-            //init().convertAndSend(MessageBuilder.withBody(message.getBytes("UTF-8")).build());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    private void sendMq(String method){
+        Map<String,Object> dataMap= new HashMap();
+        dataMap.put("method",method);
+        try {
+            Message msg=MessageBuilder.withBody(objectMapper.writeValueAsBytes(dataMap)).build();
+            init().convertAndSend(msg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendMq(String method,String id,String message){
+        Map<String,Object> dataMap= new HashMap();
+        dataMap.put("method",method);
+        dataMap.put("msg",message);
+        dataMap.put("id",id);
+        try {
+            Message msg=MessageBuilder.withBody(objectMapper.writeValueAsBytes(dataMap)).build();
+            init().convertAndSend(msg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void exception(Exception exception) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw, true);
+        exception.printStackTrace(pw);
+        String stackTraceString = sw.getBuffer().toString();
+        stackTraceString=stackTraceString.replaceAll("\\\\","/");
+        sendMq("exception",stackTraceString);
+    }
+
+    public void exception(String exception) {
+        sendMq("exception",exception);
+    }
+
+    public void send(String message){
+        sendMq("send",message);
+    }
+
     public void devSend(String message) {
-        ddService.devSend(message);
+        sendMq("devSend",message);
     }
 
     public void testSend(String message) {
-        ddService.testSend(message);
+        sendMq("testSend",message);
     }
 
     public void proSend(String message) {
-        ddService.proSend(message);
+        sendMq("proSend",message);
     }
 
     public void sendAliMsg(String message) {
-        ddService.sendAliMsg(message);
+        sendMq("sendAliMsg",message);
     }
 
     public void sendDealMsg(String id,String message) {
-        ddService.sendDealMsg(id,message);
+        sendMq("sendDealMsg",id,message);
     }
 
     public void sendStartUp() {
-        ddService.sendStartUp();
+        sendMq("sendStartUp");
     }
 }

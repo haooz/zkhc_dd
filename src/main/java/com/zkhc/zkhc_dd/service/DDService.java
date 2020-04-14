@@ -15,14 +15,12 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-@Service
+@Component
 public class DDService {
     private static final Logger LOGGER =  LoggerFactory.getLogger(DDService.class);
     private static HttpClient httpclient=null;
@@ -139,16 +137,6 @@ public class DDService {
         int port = Integer.parseInt(dd.getPort());
         insertException(id, dd.getName(), dd.getActive(), this.getHost(), port, exception);
         sendExceptionMsg(id, dd.getName(), dd.getActive(), this.getHost(), port, exception);
-    }
-
-    public void exception(Exception exception) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw, true);
-        exception.printStackTrace(pw);
-        String stackTraceString = sw.getBuffer().toString();
-        if(dd.getOpen().equals("true")){
-            error(stackTraceString);
-        }
     }
 
     public void exception(String exception) {

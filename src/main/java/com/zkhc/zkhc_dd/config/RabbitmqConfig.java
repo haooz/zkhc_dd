@@ -1,5 +1,7 @@
 package com.zkhc.zkhc_dd.config;
 import com.zkhc.zkhc_dd.core.common.constant.Const;
+import com.zkhc.zkhc_dd.rabbitmq.CommonListener;
+import com.zkhc.zkhc_dd.rabbitmq.SimpleListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
@@ -40,25 +42,10 @@ public class RabbitmqConfig {
         factory.setMaxConcurrentConsumers(1);
         factory.setPrefetchCount(1);
         factory.setTxSize(1);
-        factory.setAcknowledgeMode(AcknowledgeMode.AUTO);
+        factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+        //factory.setAcknowledgeMode(AcknowledgeMode.AUTO);自动确认
         return factory;
     }
-
-    /**
-     * 多个消费者
-     * @return
-     */
-    /*@Bean(name = "multiListenerContainer")
-    public SimpleRabbitListenerContainerFactory multiListenerContainer(){
-        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-        factoryConfigurer.configure(factory,connectionFactory);
-        factory.setMessageConverter(new Jackson2JsonMessageConverter());
-        factory.setAcknowledgeMode(AcknowledgeMode.NONE);
-        factory.setConcurrentConsumers(env.getProperty("spring.rabbitmq.listener.concurrency",int.class));
-        factory.setMaxConcurrentConsumers(env.getProperty("spring.rabbitmq.listener.max-concurrency",int.class));
-        factory.setPrefetchCount(env.getProperty("spring.rabbitmq.listener.prefetch",int.class));
-        return factory;
-    }*/
 
     @Bean
     public RabbitTemplate rabbitTemplate(){
@@ -97,6 +84,15 @@ public class RabbitmqConfig {
         return BindingBuilder.bind(ddQueue()).to(ddExchange()).with(Const.ROUTING_KEY_NAME);
     }
 
+    /*@Bean
+    public CommonListener commonListener(){
+        return new CommonListener();
+    }*/
+
+    @Bean
+    public SimpleListener simpleListener(){
+        return  new SimpleListener();
+    }
 }
 
 
